@@ -65,10 +65,7 @@ run_test "REST API Load Test" "k6 run tests/api/rest-api-test.js" "REST API perf
 # 4. Authentication Test
 run_test "Authentication Load Test" "k6 run tests/api/auth-test.js" "Authentication system performance"
 
-# 5. GraphQL Test
-run_test "GraphQL Load Test" "k6 run tests/api/graphql-test.js" "GraphQL query performance testing"
-
-# 6. UI Page Load Test
+# 5. UI Page Load Test
 run_test "UI Page Load Test" "k6 run tests/ui/page-load-test.js" "UI page loading performance"
 
 # 7. UI User Interaction Test
@@ -122,7 +119,6 @@ echo "Demo Summary:"
 echo "   - API endpoints tested and validated"
 echo "   - UI components tested for performance"
 echo "   - Authentication flows validated"
-echo "   - GraphQL queries tested"
 echo "   - User interactions simulated"
 echo "   - Combined workload tested"
 echo ""

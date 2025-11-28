@@ -1,34 +1,72 @@
 # K6 Performance Testing Framework
 
-Hey there! I built this performance testing framework after spending way too much time setting up the same k6 tests over and over again. I figured there had to be a better way to handle load testing, so I created this comprehensive framework that covers pretty much everything you'd need.
+A comprehensive k6 performance testing framework designed for microservices architecture. This framework supports both **service-level testing** (testing individual microservices) and **end-to-end (E2E) testing** (testing complete flows across multiple services).
 
-## What This Framework Does
+## 🎯 What This Framework Does
 
-After working on multiple projects, I realized I was constantly recreating the same performance testing patterns. So I decided to build something reusable that would save me (and hopefully you) a ton of time. Here's what I included:
+This framework provides a structured approach to performance testing in a microservices environment:
 
-- **API Testing**: REST endpoints, GraphQL, authentication flows
-- **UI Testing**: Page load times, user interactions, static assets
-- **Multiple Test Types**: Smoke tests (quick checks), load tests (normal usage), stress tests (breaking points), spike tests (sudden traffic)
-- **Real-world Scenarios**: Combined tests that mimic actual user behavior
-- **Easy Configuration**: Everything's centralized so you can customize it without hunting through files
+- **Service-Level Testing**: Test each microservice independently (booking, genomics, health-assessment)
+- **End-to-End Testing**: Test complete user journeys across multiple services
+- **Multiple Test Types**: Smoke tests, load tests, stress tests, spike tests
+- **Flexible Configuration**: Service-specific thresholds and endpoints
+- **Reusable Components**: Test functions that can be shared across scenarios
+- **Easy Organization**: Clear separation between test logic and execution patterns
 
-## Getting Started
+## 📁 Project Structure
 
-### Step 1: Install k6
+```
+K6-PerformanceTests/
+├── config/
+│   ├── base-config.js              # Base configuration
+│   └── services-config.js          # Microservices configuration
+├── tests/
+│   ├── api/
+│   │   ├── services/              # Service-level tests
+│   │   │   ├── booking/
+│   │   │   ├── genomics/
+│   │   │   └── health-assessment/
+│   │   ├── e2e/                   # End-to-end tests
+│   │   ├── auth-test.js
+│   │   └── rest-api-test.js
+│   └── ui/                        # UI tests
+├── scenarios/
+│   ├── services/                  # Service-level scenarios
+│   │   ├── booking/
+│   │   ├── genomics/
+│   │   └── health-assessment/
+│   ├── e2e/                       # E2E scenarios
+│   ├── api-*.js                   # General API scenarios
+│   └── ui-*.js                    # UI scenarios
+├── utils/                         # Utility functions
+└── Documentation/
+    ├── MICROSERVICES_STRUCTURE.md
+    ├── MICROSERVICES_QUICK_START.md
+    └── PROJECT_STRUCTURE.md
+```
 
-First things first - you'll need k6 installed on your machine. Here's how to get it set up:
+## 🚀 Getting Started
 
-**On macOS:**
+### Prerequisites
+
+- **k6** installed on your system
+- **Node.js** (for npm scripts, optional)
+
+### Installation
+
+**Install k6:**
+
+**macOS:**
 ```bash
 brew install k6
 ```
 
-**On Windows:**
+**Windows:**
 ```bash
 choco install k6
 ```
 
-**On Linux (Ubuntu/Debian):**
+**Linux (Ubuntu/Debian):**
 ```bash
 sudo gpg -k
 sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
@@ -37,311 +75,380 @@ sudo apt-get update
 sudo apt-get install k6
 ```
 
-**Make sure it worked:**
+**Verify installation:**
 ```bash
 k6 version
 ```
 
-You should see something like "k6 v0.47.0" or similar. If you get a "command not found" error, you might need to restart your terminal or check your PATH.
+## ⚙️ Configuration
 
-### Step 2: Set Up Your Project
+### 1. Configure Microservices
 
-1. **Clone this repository:**
-   ```bash
-   git clone https://github.com/String-Gaurav/K6-PerformanceTests.git
-   cd K6-PerformanceTests
-   ```
-
-2. **Check the structure:**
-   ```
-   ├── config/
-   │   └── base-config.js          # Main settings file
-   ├── tests/
-   │   ├── api/                    # API test files
-   │   └── ui/                     # UI test files
-   ├── scenarios/                  # Test scenarios (smoke, load, stress)
-   ├── utils/                      # Helper functions
-   ├── examples/                   # Example scripts
-   └── demo.sh                     # Quick demo script
-   ```
-
-### Step 3: Configure for Your Application
-
-The main configuration is in `config/base-config.js`. You'll need to update a few things:
-
-1. **Change the base URL:**
-   ```javascript
-   export const BASE_CONFIG = {
-     BASE_URL: 'https://your-api.com',  // Change this to your API
-     API_BASE_URL: 'https://your-api.com/api',  // Your API endpoint
-     // ... rest of the config
-   };
-   ```
-
-2. **Adjust thresholds for your needs:**
-   ```javascript
-   THRESHOLDS: {
-     http_req_duration: ['p(95)<500'],  // 95% of requests under 500ms
-     http_req_failed: ['rate<0.1'],     // Less than 10% failures
-     checks: ['rate>0.9']               // 90% of checks should pass
-   }
-   ```
-
-3. **Update test data:**
-   ```javascript
-   TEST_DATA: {
-     validUser: { email: 'test@yourdomain.com', password: 'yourpassword' },
-     // ... other test data
-   }
-   ```
-
-## Running Your First Tests
-
-### Quick Demo
-
-I included a demo script to get you started quickly:
+Edit `config/services-config.js` or set environment variables:
 
 ```bash
-./demo.sh
+export BOOKING_SERVICE_URL=https://booking-api.yourdomain.com
+export GENOMICS_SERVICE_URL=https://genomics-api.yourdomain.com
+export HEALTH_ASSESSMENT_SERVICE_URL=https://health-api.yourdomain.com
 ```
 
-This runs a few different test types so you can see how everything works.
-
-### Individual Test Types
-
-**Smoke Test (Quick validation):**
+Or create a `.env` file (copy from `env.example`):
 ```bash
-k6 run scenarios/api-smoke-test.js
+BOOKING_SERVICE_URL=https://booking-api.yourdomain.com
+GENOMICS_SERVICE_URL=https://genomics-api.yourdomain.com
+HEALTH_ASSESSMENT_SERVICE_URL=https://health-api.yourdomain.com
 ```
 
-**Load Test (Normal usage simulation):**
+### 2. Configure Base Settings
+
+Edit `config/base-config.js` for general settings:
+- Base URLs
+- Authentication credentials
+- Default thresholds
+- Test data
+
+## 🧪 Running Tests
+
+### Service-Level Tests
+
+Test individual microservices in isolation:
+
 ```bash
-k6 run scenarios/api-load-test.js
+# Booking Service
+npm run test:service:booking:smoke    # Quick validation
+npm run test:service:booking:load     # Load testing
+
+# Genomics Service
+npm run test:service:genomics:smoke
+npm run test:service:genomics:load
+
+# Health Assessment Service
+npm run test:service:health:smoke
+npm run test:service:health:load
 ```
 
-**Stress Test (Find breaking points):**
+### End-to-End Tests
+
+Test complete flows across multiple services:
+
 ```bash
-k6 run scenarios/api-stress-test.js
+# Booking with Health Check flow
+npm run test:e2e:booking-health
+
+# Full Patient Journey (all services)
+npm run test:e2e:full-journey
+
+# All E2E flows
+npm run test:e2e:all
 ```
 
-**UI Performance Test:**
+### General API/UI Tests
+
 ```bash
-k6 run scenarios/ui-load-test.js
+# API Tests
+npm run test:api:smoke              # Quick API validation
+npm run test:api:load                # API load testing
+npm run test:api:stress              # API stress testing
+npm run test:api:auth                # Authentication tests
+npm run test:api:rest                # REST API tests
+
+# UI Tests
+npm run test:ui:smoke                # UI smoke test
+npm run test:ui:load                 # UI load test
+npm run test:ui:pages                # Page load tests
+npm run test:ui:interactions         # User interaction tests
+
+# Combined Tests
+npm run test:all                     # Comprehensive test suite
 ```
 
-## Understanding the Results
+### Running Tests Directly
 
-When you run a test, k6 shows you detailed metrics:
+You can also run tests directly with k6:
 
-### Key Metrics to Watch
+```bash
+# Service test
+k6 run tests/api/services/booking/booking-api-test.js
 
-- **http_req_duration**: How long requests take
-  - `avg`: Average response time
-  - `p(95)`: 95% of requests are faster than this
-  - `p(99)`: 99% of requests are faster than this
+# Service scenario
+k6 run scenarios/services/booking/booking-load-test.js
 
+# E2E test
+k6 run tests/api/e2e/full-patient-journey-test.js
+```
+
+## 📊 Understanding Test Results
+
+### Key Metrics
+
+- **http_req_duration**: Response time (avg, p95, p99)
 - **http_req_failed**: Percentage of failed requests
-- **http_reqs**: Total number of requests made
-- **checks**: How many of your assertions passed
+- **http_reqs**: Total requests and requests per second
+- **checks**: Percentage of passed assertions
+- **vus**: Virtual users (concurrent users)
 
-### Example Good Results
-```
-✓ http_req_duration: p(95)=245ms (threshold: 500ms)    # Fast responses
-✓ http_req_failed: 0.5% (threshold: 10%)               # Low error rate
-✓ checks: 98.5% (threshold: 90%)                       # Most checks passed
-```
+### Example Output
 
-### Example Concerning Results
 ```
-✗ http_req_duration: p(95)=1200ms (threshold: 500ms)  # Slow responses
-✓ http_req_failed: 2.5% (threshold: 10%)               # Acceptable errors
-✗ checks: 85% (threshold: 90%)                         # Some checks failing
+✓ http_req_duration: p(95)=245ms (threshold: 500ms)
+✓ http_req_failed: 0.5% (threshold: 5%)
+✓ checks: 98.5% (threshold: 90%)
 ```
 
-## Creating Your Own Tests
+## 🏗️ Architecture: Tests vs Scenarios
 
-### Basic API Test
+### `/tests` - Test Implementation (WHAT to test)
 
-Here's a simple test you can create:
+Contains the actual test logic:
+- HTTP requests
+- Response validation
+- Test functions (reusable)
+- Can run standalone
 
+**Example:**
 ```javascript
-import http from 'k6/http';
-import { check } from 'k6';
-
-export const options = {
-  vus: 10,        // 10 virtual users
-  duration: '30s' // Run for 30 seconds
-};
-
-export default function() {
-  // Make a GET request
-  const response = http.get('https://your-api.com/users');
-  
-  // Check if it worked
-  check(response, {
-    'status is 200': (r) => r.status === 200,
-    'response time < 500ms': (r) => r.timings.duration < 500,
-    'response has users': (r) => r.json().users.length > 0
-  });
+// tests/api/services/booking/booking-api-test.js
+export function testCreateBooking(serviceConfig) {
+  const response = makeRequest('POST', url, data);
+  check(response, { 'status is 201': (r) => r.status === 201 });
 }
 ```
 
-### POST Request Test
+### `/scenarios` - Test Orchestration (HOW to run tests)
 
+Defines how tests execute:
+- Load patterns (VUs, duration, stages)
+- Thresholds
+- Imports and calls test functions
+
+**Example:**
 ```javascript
-import http from 'k6/http';
-import { check } from 'k6';
-
-export const options = {
-  vus: 5,
-  duration: '1m'
-};
-
-export default function() {
-  const payload = JSON.stringify({
-    name: 'Test User',
-    email: 'test@example.com'
-  });
-
-  const response = http.post('https://your-api.com/users', payload, {
-    headers: { 'Content-Type': 'application/json' }
-  });
-
-  check(response, {
-    'user created successfully': (r) => r.status === 201,
-    'response time < 1s': (r) => r.timings.duration < 1000
-  });
-}
-```
-
-## Common Issues and Solutions
-
-### "Connection Refused" Errors
-
-This usually means your API isn't running or the URL is wrong.
-
-**Check:**
-1. Is your API server running?
-2. Is the URL in `base-config.js` correct?
-3. Can you access the URL in your browser?
-
-### High Error Rates
-
-If you're seeing lots of failed requests:
-
-**Possible causes:**
-1. **Rate limiting**: Your API might be blocking too many requests
-2. **Authentication issues**: Check if your API requires authentication
-3. **Server overload**: The server might not handle the load
-
-**Solutions:**
-1. Reduce the number of virtual users (`vus`)
-2. Add delays between requests (`sleep(1)`)
-3. Check your API logs for specific errors
-
-### Slow Response Times
-
-If requests are taking too long:
-
-**Check:**
-1. Is your API optimized?
-2. Are you testing against the right environment?
-3. Is your network connection stable?
-
-**Solutions:**
-1. Test against a staging environment first
-2. Use smaller load initially
-3. Check if your API has caching enabled
-
-## Customizing for Your Needs
-
-### Different Environments
-
-I set up the framework to easily switch between environments:
-
-```javascript
-// In base-config.js
-const environment = __ENV.ENV || 'staging';
-
-const configs = {
-  staging: {
-    BASE_URL: 'https://staging.yourapp.com'
-  },
-  production: {
-    BASE_URL: 'https://yourapp.com'
-  }
-};
-
-export const BASE_CONFIG = configs[environment];
-```
-
-Then run tests like:
-```bash
-ENV=staging k6 run scenarios/api-load-test.js
-ENV=production k6 run scenarios/api-smoke-test.js
-```
-
-### Custom Test Scenarios
-
-You can create your own scenarios by combining different test functions:
-
-```javascript
-import { testGetUsers, testCreateUser } from '../tests/api/user-tests.js';
-
+// scenarios/services/booking/booking-load-test.js
 export const options = {
   scenarios: {
-    read_heavy: {
-      executor: 'constant-vus',
-      vus: 20,
-      duration: '2m',
-      exec: 'readScenario'
-    },
-    write_heavy: {
-      executor: 'constant-vus',
-      vus: 5,
-      duration: '2m',
-      exec: 'writeScenario'
+    booking_load: {
+      executor: 'ramping-vus',
+      startVUs: 1,
+      stages: [
+        { duration: '30s', target: 5 },
+        { duration: '1m', target: 5 }
+      ]
     }
   }
 };
+```
 
-export function readScenario() {
-  testGetUsers();
-  testGetUserProfile();
-}
+## 🔧 Adding a New Microservice
 
-export function writeScenario() {
-  testCreateUser();
-  testUpdateUser();
+### Step 1: Add Service Configuration
+
+Edit `config/services-config.js`:
+
+```javascript
+export const SERVICES_CONFIG = {
+  // ... existing services
+  newService: {
+    BASE_URL: __ENV.NEW_SERVICE_URL || 'https://new-service.example.com',
+    API_VERSION: 'v1',
+    THRESHOLDS: {
+      http_req_duration: ['p(95)<500', 'p(99)<1000'],
+      http_req_failed: ['rate<0.05']
+    },
+    ENDPOINTS: {
+      endpoint1: '/endpoint1',
+      endpoint2: '/endpoint2/{id}'
+    }
+  }
+};
+```
+
+### Step 2: Create Service Test File
+
+Create `tests/api/services/new-service/new-service-api-test.js`:
+
+```javascript
+import { getServiceUrl, getServiceConfig } from '../../../../config/services-config.js';
+
+export function testEndpoint1(serviceConfig) {
+  const url = getServiceUrl('newService', 'endpoint1');
+  const response = makeRequest('GET', url);
+  check(response, { 'status is 200': (r) => r.status === 200 });
 }
 ```
 
-## Best Practices I've Learned
+### Step 3: Create Service Scenarios
 
-### Start Small
-Don't jump straight to 1000 virtual users. Start with:
-1. Smoke test (1 user, 30 seconds)
-2. Light load (5 users, 2 minutes)
-3. Medium load (20 users, 5 minutes)
-4. Heavy load (50+ users, 10+ minutes)
+Create `scenarios/services/new-service/new-service-smoke-test.js` and load/stress tests.
 
-### Test Regularly
-- Run smoke tests after every deployment
-- Run load tests weekly
-- Run stress tests before major releases
+### Step 4: Add npm Scripts
 
-### Monitor Key Metrics
-Focus on these metrics:
-- **Response time percentiles** (p95, p99)
-- **Error rates** (should be under 5%)
-- **Throughput** (requests per second)
+Update `package.json`:
 
-### Use Realistic Data
-Make sure your test data looks like real user data.
+```json
+"test:service:new-service:smoke": "k6 run scenarios/services/new-service/new-service-smoke-test.js",
+"test:service:new-service:load": "k6 run scenarios/services/new-service/new-service-load-test.js"
+```
 
-## Contributing
+## 📚 Documentation
 
-If you find issues or want to add features:
+- **[MICROSERVICES_STRUCTURE.md](./MICROSERVICES_STRUCTURE.md)** - Complete microservices structure guide
+- **[MICROSERVICES_QUICK_START.md](./MICROSERVICES_QUICK_START.md)** - Quick start guide for microservices testing
+- **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Detailed project structure documentation
+- **[WHY_JAVASCRIPT.md](./WHY_JAVASCRIPT.md)** - Why JavaScript is used instead of TypeScript
+
+## 🎯 Testing Strategy
+
+### Development/CI Pipeline
+
+1. **Service smoke tests** - Run after each service deployment
+2. **Service load tests** - Run nightly for each service
+3. **E2E smoke tests** - Run after all services deployed
+4. **E2E load tests** - Run weekly for full system validation
+
+### Production Validation
+
+1. **Service-level load tests** - Validate individual service performance
+2. **E2E load tests** - Validate complete system performance
+3. **Stress tests** - Identify breaking points per service and system-wide
+
+## 💡 Best Practices
+
+### Service-Level Testing
+
+1. **Test in isolation** - Each service should be testable independently
+2. **Service-specific thresholds** - Different services may have different performance requirements
+3. **Comprehensive endpoint coverage** - Test all endpoints for each service
+4. **Reusable functions** - Make test functions importable for E2E tests
+
+### E2E Testing
+
+1. **Real user flows** - Test actual user journeys, not just random API calls
+2. **Data flow validation** - Ensure data flows correctly between services
+3. **Error handling** - Test what happens when one service fails
+4. **Realistic delays** - Add appropriate delays between service calls
+
+### Configuration
+
+1. **Environment-based URLs** - Use environment variables for different environments
+2. **Service-specific thresholds** - Genomics might be slower than booking
+3. **Centralized configuration** - Keep all service configs in one place
+4. **Version management** - Support different API versions per service
+
+## 🐛 Troubleshooting
+
+### Service Not Found Error
+
+Make sure the service name in `SERVICES_CONFIG` matches what you're using:
+```javascript
+getServiceConfig('booking')  // ✅ Correct
+getServiceConfig('Booking')  // ❌ Wrong (case-sensitive)
+```
+
+### Endpoint Not Found Error
+
+Check that the endpoint key exists in the service's `ENDPOINTS` object:
+```javascript
+getServiceUrl('booking', 'createBooking')  // ✅ Correct
+getServiceUrl('booking', 'create')        // ❌ Wrong
+```
+
+### Import Errors
+
+Use correct relative paths:
+```javascript
+// From tests/api/services/booking/
+import { getServiceConfig } from '../../../../config/services-config.js';
+```
+
+### High Error Rates
+
+- Check service URLs are correct
+- Verify services are running
+- Check network connectivity
+- Review service logs
+
+### Slow Response Times
+
+- Adjust thresholds for service characteristics
+- Check service performance
+- Verify test environment matches production
+- Review service resource usage
+
+## 📝 Example: Complete Test Flow
+
+### 1. Service-Level Test
+
+```bash
+# Test booking service in isolation
+npm run test:service:booking:load
+```
+
+This tests:
+- Booking creation
+- Booking retrieval
+- Availability checks
+- Booking updates
+- Booking cancellation
+
+### 2. E2E Test
+
+```bash
+# Test complete patient journey
+npm run test:e2e:full-journey
+```
+
+This tests:
+- Health assessment creation
+- Genomics sequence upload
+- Assessment submission
+- Sequence analysis
+- Booking creation
+- Results retrieval (all services)
+
+## 🔄 Environment Variables
+
+Key environment variables:
+
+```bash
+# Service URLs (Required for microservices testing)
+BOOKING_SERVICE_URL=https://booking-api.example.com
+GENOMICS_SERVICE_URL=https://genomics-api.example.com
+HEALTH_ASSESSMENT_SERVICE_URL=https://health-api.example.com
+
+# API Versions (Optional, defaults to v1)
+BOOKING_API_VERSION=v1
+GENOMICS_API_VERSION=v1
+HEALTH_ASSESSMENT_API_VERSION=v1
+
+# General Configuration
+BASE_URL=https://your-api.com
+API_BASE_URL=https://your-api.com/api
+ENV=staging
+```
+
+## 📈 Test Types Explained
+
+### Smoke Tests
+- **Purpose**: Quick validation
+- **Load**: 1 VU, short duration (30s)
+- **Use**: After deployments, quick checks
+
+### Load Tests
+- **Purpose**: Normal usage simulation
+- **Load**: Moderate VUs (5-10), sustained duration
+- **Use**: Validate performance under expected load
+
+### Stress Tests
+- **Purpose**: Find breaking points
+- **Load**: High VUs (50+), ramping up
+- **Use**: Identify system limits
+
+### Spike Tests
+- **Purpose**: Sudden traffic spikes
+- **Load**: Rapid VU increase
+- **Use**: Test system resilience
+
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -349,47 +456,31 @@ If you find issues or want to add features:
 4. Test thoroughly
 5. Submit a pull request
 
-<<<<<<< HEAD
-=======
-I'm always looking to improve this framework, so contributions are welcome!
+## 📄 License
 
-## Troubleshooting
+This project is open source and available under the MIT License.
 
-### k6 Command Not Found
-Make sure k6 is installed and in your PATH:
-```bash
-which k6
-# Should show something like /usr/local/bin/k6
-```
+## 🆘 Getting Help
 
-### Permission Denied on demo.sh
-Make the script executable:
-```bash
-chmod +x demo.sh
-```
+- **k6 Documentation**: [k6.io/docs](https://k6.io/docs)
+- **Project Documentation**: See `/Documentation` folder
+- **Issues**: Create an issue in the repository
+- **Community**: Join the k6 community
 
-### Module Import Errors
-Make sure you're running tests from the project root directory:
-```bash
-cd /path/to/K6-PerformanceTests
-k6 run scenarios/api-smoke-test.js
-```
+## 🎉 Quick Start Summary
 
-## Getting Help
-
-If you run into issues:
-
-1. **Check the k6 documentation**: [k6.io/docs](https://k6.io/docs)
-2. **Look at the examples**: The `examples/` folder has working samples
-3. **Create an issue**: If you find a bug, let me know
-4. **Join the community**: The k6 community is very helpful
-
-## License
-
-This project is open source and available under the MIT License. Feel free to use it, modify it, and share it.
+1. **Install k6**: `brew install k6` (or see installation section)
+2. **Configure services**: Set service URLs in environment variables
+3. **Run smoke test**: `npm run test:service:booking:smoke`
+4. **Review results**: Check console output for metrics
+5. **Run load test**: `npm run test:service:booking:load`
+6. **Run E2E test**: `npm run test:e2e:full-journey`
 
 ---
 
-That's it! This framework should give you a solid foundation for performance testing. Start with the smoke tests to make sure everything works, then gradually work your way up to more comprehensive testing scenarios.
+**Happy Testing!** 🚀
 
-Happy testing!
+For detailed information, see:
+- [MICROSERVICES_QUICK_START.md](./MICROSERVICES_QUICK_START.md) - Quick start guide
+- [MICROSERVICES_STRUCTURE.md](./MICROSERVICES_STRUCTURE.md) - Complete structure guide
+- [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) - Project structure details

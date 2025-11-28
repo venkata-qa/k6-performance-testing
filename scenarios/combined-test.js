@@ -1,7 +1,6 @@
 import { BASE_CONFIG, SCENARIOS } from '../config/base-config.js';
 import { default as restApiTest } from '../tests/api/rest-api-test.js';
 import { default as authTest } from '../tests/api/auth-test.js';
-import { default as graphqlTest } from '../tests/api/graphql-test.js';
 import { default as pageLoadTest } from '../tests/ui/page-load-test.js';
 import { default as userInteractionTest } from '../tests/ui/user-interaction-test.js';
 import { makeRequest } from '../utils/helpers.js';
@@ -89,8 +88,7 @@ export function systemCheck(data) {
   // Basic health checks
   const healthChecks = [
     `${data.apiBaseUrl}/posts/1`,
-    `${data.uiBaseUrl}/`,
-    `${data.apiBaseUrl}/graphql`
+    `${data.uiBaseUrl}/`
   ];
   
   healthChecks.forEach(url => {
@@ -118,12 +116,6 @@ export function testAPIEndpoints(data) {
     authTest(data);
   } catch (error) {
     console.log(`Auth test error: ${error.message}`);
-  }
-  
-  try {
-    graphqlTest(data);
-  } catch (error) {
-    console.log(`GraphQL test error: ${error.message}`);
   }
 }
 
@@ -196,8 +188,7 @@ export function stressTest(data) {
     `${data.apiBaseUrl}/posts`,
     `${data.apiBaseUrl}/users`,
     `${data.uiBaseUrl}/`,
-    `${data.uiBaseUrl}/html`,
-    `${data.apiBaseUrl}/graphql`
+    `${data.uiBaseUrl}/html`
   ];
   
   stressEndpoints.forEach(url => {
@@ -248,7 +239,6 @@ export function teardown(data) {
   console.log('Phase 2: API Load Testing');
   console.log('- REST API performance validated');
   console.log('- Authentication system tested');
-  console.log('- GraphQL queries optimized');
   console.log('');
   console.log('Phase 3: UI Load Testing');
   console.log('- Page load performance validated');

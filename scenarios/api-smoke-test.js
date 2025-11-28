@@ -1,7 +1,6 @@
 import { BASE_CONFIG, SCENARIOS } from '../config/base-config.js';
 import { testGetAllPosts, testGetSpecificPost, testCreatePost } from '../tests/api/rest-api-test.js';
 import { testUserLogin, testTokenValidation } from '../tests/api/auth-test.js';
-import { testGetPostsQuery, testIntrospectionQuery } from '../tests/api/graphql-test.js';
 
 /**
  * API Smoke Test Scenario
@@ -46,10 +45,6 @@ export default function(data) {
   if (token) {
     testTokenValidation(data.baseUrl, token);
   }
-  
-  // GraphQL Smoke Tests
-  testIntrospectionQuery(`${data.baseUrl}/graphql`);
-  testGetPostsQuery(`${data.baseUrl}/graphql`);
 }
 
 export function teardown(data) {

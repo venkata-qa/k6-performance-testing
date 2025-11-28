@@ -1,7 +1,6 @@
 import { BASE_CONFIG, SCENARIOS } from '../config/base-config.js';
 import { default as restApiTest } from '../tests/api/rest-api-test.js';
 import { default as authTest } from '../tests/api/auth-test.js';
-import { default as graphqlTest } from '../tests/api/graphql-test.js';
 
 /**
  * API Load Test Scenario
@@ -22,10 +21,6 @@ export const options = {
     auth_load: Object.assign({}, SCENARIOS.LOAD, {
       exec: 'testAuthentication',
       startTime: '30s' // Start auth tests 30s after REST API tests
-    }),
-    graphql_load: Object.assign({}, SCENARIOS.LOAD, {
-      exec: 'testGraphQL',
-      startTime: '1m' // Start GraphQL tests 1m after REST API tests
     })
   }
 };
@@ -52,11 +47,6 @@ export function testAuthentication(data) {
   authTest(data);
 }
 
-export function testGraphQL(data) {
-  // Run GraphQL tests with load
-  graphqlTest(data);
-}
-
 export default function(data) {
   // This function won't be called due to custom exec functions in scenarios
   console.log('API Load Test - Default function called (should not happen)');
@@ -67,5 +57,4 @@ export function teardown(data) {
   console.log('Load Test Summary:');
   console.log('- REST API: Moderate load validation');
   console.log('- Authentication: User session management under load');
-  console.log('- GraphQL: Query performance under load');
 }

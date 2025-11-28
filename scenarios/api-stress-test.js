@@ -1,7 +1,6 @@
 import { BASE_CONFIG, SCENARIOS } from '../config/base-config.js';
 import { default as restApiTest } from '../tests/api/rest-api-test.js';
 import { default as authTest } from '../tests/api/auth-test.js';
-import { default as graphqlTest } from '../tests/api/graphql-test.js';
 import { makeRequest } from '../utils/helpers.js';
 
 /**
@@ -23,10 +22,6 @@ export const options = {
     auth_stress: Object.assign({}, SCENARIOS.STRESS, {
       exec: 'testAuthenticationStress',
       startTime: '1m'
-    }),
-    graphql_stress: Object.assign({}, SCENARIOS.STRESS, {
-      exec: 'testGraphQLStress',
-      startTime: '2m'
     }),
     spike_test: Object.assign({}, SCENARIOS.SPIKE, {
       exec: 'testSpikeLoad',
@@ -60,12 +55,6 @@ export function testAuthenticationStress(data) {
   authTest(data);
 }
 
-export function testGraphQLStress(data) {
-  console.log('Running GraphQL stress test');
-  // Run GraphQL tests under stress
-  graphqlTest(data);
-}
-
 export function testSpikeLoad(data) {
   console.log('Running spike load test');
   
@@ -74,8 +63,7 @@ export function testSpikeLoad(data) {
     `${data.baseUrl}/posts`,
     `${data.baseUrl}/users`,
     `${data.baseUrl}/comments`,
-    `${data.apiBaseUrl}/auth/login`,
-    `${data.baseUrl}/graphql`
+    `${data.apiBaseUrl}/auth/login`
   ];
   
   spikeRequests.forEach(url => {
@@ -99,7 +87,6 @@ export function teardown(data) {
   console.log('Stress Test Summary:');
   console.log('- REST API: High load validation');
   console.log('- Authentication: Session management under stress');
-  console.log('- GraphQL: Complex queries under stress');
   console.log('- Spike Test: Traffic spike handling');
   console.log('');
   console.log('Review error rates and response times to identify bottlenecks');

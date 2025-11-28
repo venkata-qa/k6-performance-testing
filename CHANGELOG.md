@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial release of the k6 Performance Testing Framework
-- Comprehensive API testing suite including REST, GraphQL, and Authentication tests
+- Comprehensive API testing suite including REST and Authentication tests
 - Complete UI testing suite with page load and user interaction tests
 - Advanced performance monitoring and metrics collection
 - Multiple test scenarios: smoke, load, stress, and spike testing
@@ -21,7 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Features
 - **API Testing**
   - REST API performance testing with CRUD operations
-  - GraphQL query and mutation performance testing
   - Authentication and session management testing
   - Rate limiting and error handling validation
   

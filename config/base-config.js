@@ -51,47 +51,6 @@ export const USER_CREDENTIALS = new SharedArray('user-credentials', function () 
   ];
 });
 
-// GraphQL queries
-export const GRAPHQL_QUERIES = {
-  GET_POSTS: `
-    query GetPosts($limit: Int) {
-      posts(limit: $limit) {
-        id
-        title
-        body
-        user {
-          id
-          name
-          email
-        }
-      }
-    }
-  `,
-  GET_USER: `
-    query GetUser($id: ID!) {
-      user(id: $id) {
-        id
-        name
-        email
-        posts {
-          id
-          title
-        }
-      }
-    }
-  `,
-  CREATE_POST: `
-    mutation CreatePost($input: PostInput!) {
-      createPost(input: $input) {
-        id
-        title
-        body
-        userId
-      }
-    }
-  `
-};
-
 // Performance test scenarios
 export const SCENARIOS = {
   SMOKE: {
