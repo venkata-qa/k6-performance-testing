@@ -1,0 +1,44 @@
+{
+  "name": "k6-performance-framework-typescript",
+  "version": "1.0.0",
+  "description": "A k6 performance testing framework in TypeScript - Complete standalone project",
+  "main": "index.ts",
+  "scripts": {
+    "test:api:smoke": "k6 run scenarios/api-smoke-test.ts",
+    "test:api:load": "k6 run scenarios/api-load-test.ts",
+    "test:api:stress": "k6 run scenarios/api-stress-test.ts",
+    "test:ui:smoke": "k6 run scenarios/ui-smoke-test.ts",
+    "test:ui:load": "k6 run scenarios/ui-load-test.ts",
+    "test:all": "k6 run scenarios/combined-test.ts",
+    "test:api:auth": "k6 run tests/api/auth-test.ts",
+    "test:api:rest": "k6 run tests/api/rest-api-test.ts",
+    "test:ui:pages": "k6 run tests/ui/page-load-test.ts",
+    "test:ui:interactions": "k6 run tests/ui/user-interaction-test.ts",
+    "test:service:booking:smoke": "k6 run scenarios/services/booking/booking-smoke-test.ts",
+    "test:service:booking:load": "k6 run scenarios/services/booking/booking-load-test.ts",
+    "test:service:genomics:smoke": "k6 run scenarios/services/genomics/genomics-smoke-test.ts",
+    "test:service:genomics:load": "k6 run scenarios/services/genomics/genomics-load-test.ts",
+    "test:service:health:smoke": "k6 run scenarios/services/health-assessment/health-assessment-smoke-test.ts",
+    "test:service:health:load": "k6 run scenarios/services/health-assessment/health-assessment-load-test.ts",
+    "test:e2e:booking-health": "k6 run tests/api/e2e/booking-with-health-check-test.ts",
+    "test:e2e:full-journey": "k6 run tests/api/e2e/full-patient-journey-test.ts",
+    "test:e2e:all": "k6 run scenarios/e2e/full-system-e2e-test.ts",
+    "type-check": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "keywords": [
+    "k6",
+    "performance-testing",
+    "load-testing",
+    "api-testing",
+    "ui-testing",
+    "typescript"
+  ],
+  "author": "Saurabh",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/k6": "^0.47.0",
+    "typescript": "^5.0.0"
+  }
+}
+
